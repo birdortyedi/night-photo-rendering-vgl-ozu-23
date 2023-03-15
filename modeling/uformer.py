@@ -11,7 +11,7 @@ import time
 from torch import einsum
 from kornia.geometry.transform import resize
 from torch.utils.cpp_extension import load
-hist_utils = torch.utils.cpp_extension.load(name="histogram_cpp", sources=["modeling/histogram.cpp", "modeling/histogram.cu"])
+# hist_utils = torch.utils.cpp_extension.load(name="histogram_cpp", sources=["modeling/histogram.cpp", "modeling/histogram.cu"])
 
 
 class FastLeFF(nn.Module):
@@ -1121,21 +1121,21 @@ def exact_feature_distribution_matching(content_feat, style_feat):
 
 
 # HM
-def histogram_matching(content_feat, style_feat):
+# def histogram_matching(content_feat, style_feat):
     
-    assert (content_feat[:, 0].size() == style_feat.size())
-    B, C, D = content_feat.size(0), content_feat.size(1), content_feat.size(2)
-    content_feat_view = content_feat.view(-1, D)
-    style_feat_view = style_feat.unsqueeze(1).repeat((1, C, 1)).view(-1, D)
-    hist_matched_feat = content_feat_view.clone()
+#     assert (content_feat[:, 0].size() == style_feat.size())
+#     B, C, D = content_feat.size(0), content_feat.size(1), content_feat.size(2)
+#     content_feat_view = content_feat.view(-1, D)
+#     style_feat_view = style_feat.unsqueeze(1).repeat((1, C, 1)).view(-1, D)
+#     hist_matched_feat = content_feat_view.clone()
     
-    print(content_feat_view.shape, style_feat_view.shape, hist_matched_feat.shape)
+#     print(content_feat_view.shape, style_feat_view.shape, hist_matched_feat.shape)
     
-    hist_utils.matchHistogram(hist_matched_feat, style_feat_view.clone())
-    hist_matched_feat = hist_matched_feat.view(B, C, D)
-    new_content = content_feat + (hist_matched_feat - content_feat).detach()
+#     hist_utils.matchHistogram(hist_matched_feat, style_feat_view.clone())
+#     hist_matched_feat = hist_matched_feat.view(B, C, D)
+#     new_content = content_feat + (hist_matched_feat - content_feat).detach()
     
-    return new_content
+#     return new_content
 
     
 class StyleUformerBlock(BasicUformerLayer):
@@ -1143,7 +1143,7 @@ class StyleUformerBlock(BasicUformerLayer):
         "none": lambda x, _ : x,
         "efdm": exact_feature_distribution_matching,
         "adain": adaptive_instance_normalization,
-        "hm": histogram_matching
+        # "hm": histogram_matching
     }
     
     def __init__(self, dim, input_dim, output_dim, input_resolution, depth, num_heads, win_size, 
