@@ -1,6 +1,7 @@
 import os
 import argparse
 import torch
+import gdown
 import glog as log
 from typing import List
 
@@ -80,32 +81,39 @@ if __name__ == '__main__':
         os.makedirs(weights_dir)
         log.info("Unzipping downloaded zip file for weights...")
         io.unzip(zip_fname, weights_dir)
+        os.remove(zip_fname)
         log.info("Done.")
-    
-    wb_network = awb.build_model(
-        wb_model_path=wb_model_path,
-        wb_settings=wb_settings, 
-        device=io.get_device("0")
-    )
-    restormer = restormer_arch.build_model(
-        model_path=restormer_model_path, 
-        params= {
-            'inp_channels':3, 
-            'out_channels':3, 
-            'dim':48, 
-            'num_blocks':[4,6,6,8], 
-            'num_refinement_blocks':4, 
-            'heads':[1,2,4,8],
-            'ffn_expansion_factor':2.66, 
-            'bias':False, 
-            'LayerNorm_type':'BiasFree', 
-            'dual_pixel_task':False
-        },
-        device=io.get_device("1")
-    ) if torch.cuda.device_count() > 1 else None
-    
-    base_dir = args.data_dir
-    out_dir = args.output_dir
-    img_names = os.listdir(base_dir)
-    img_names = [img_name for img_name in img_names if ".png" in img_name]
-    single_run(base_dir, img_names, out_dir, wb_network, restormer)
+        
+    data_dir = args.data_dir
+    if not os.path.exists(data_dir) or len(os.listdir(data_dir)) == 0:
+        log.info("Data does not exist, please put the data from given link into 'data/test'...")
+        os.makedirs(data_dir, exist_ok=True)
+        log.info("After this, please re-run.")
+    else:
+        wb_network = awb.build_model(
+            wb_model_path=wb_model_path,
+            wb_settings=wb_settings, 
+            device=io.get_device("0")
+        )
+        restormer = restormer_arch.build_model(
+            model_path=restormer_model_path, 
+            params= {
+                'inp_channels':3, 
+                'out_channels':3, 
+                'dim':48, 
+                'num_blocks':[4,6,6,8], 
+                'num_refinement_blocks':4, 
+                'heads':[1,2,4,8],
+                'ffn_expansion_factor':2.66, 
+                'bias':False, 
+                'LayerNorm_type':'BiasFree', 
+                'dual_pixel_task':False
+            },
+            device=io.get_device("1")
+        ) if torch.cuda.device_count() > 1 else None
+        
+        base_dir = args.data_dir
+        out_dir = args.output_dir
+        img_names = os.listdir(base_dir)
+        img_names = [img_name for img_name in img_names if ".png" in img_name]
+        single_run(base_dir, img_names, out_dir, wb_network, restormer)
