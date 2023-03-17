@@ -10,6 +10,6 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 COPY requirements.txt .
 RUN python -m pip install --no-cache -r requirements.txt
 
-COPY . /night-photo-rendering-vgl-ozu-23
-WORKDIR /night-photo-rendering-vgl-ozu-23
+COPY . /vgl-ozu
+WORKDIR /vgl-ozu
 
