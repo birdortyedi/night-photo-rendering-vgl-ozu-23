@@ -1,7 +1,6 @@
 import os
 import argparse
 import torch
-import gdown
 import glog as log
 from typing import List
 
@@ -86,7 +85,7 @@ if __name__ == '__main__':
         
     data_dir = args.data_dir
     if not os.path.exists(data_dir) or len(os.listdir(data_dir)) == 0:
-        log.info("Data does not exist, please put the data from given link into 'data/test'...")
+        log.info("Data does not exist, please put the data from given link into 'data/'...")
         os.makedirs(data_dir, exist_ok=True)
         log.info("After this, please re-run.")
     else:
